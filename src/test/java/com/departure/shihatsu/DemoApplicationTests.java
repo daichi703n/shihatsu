@@ -1,4 +1,4 @@
-package com.shihatsu.shihatsu;
+package com.departure.shihatsu;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
