@@ -31,7 +31,7 @@ public class EkiSideController {
         String result = restTemplate.getForObject(ekiUrl, String.class, index1, index2);
 
         model.addAttribute("msg",result);
-        return "/index";
+        return "/check";
     }
 
 }
