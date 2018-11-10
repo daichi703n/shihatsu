@@ -21,7 +21,15 @@
   (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
   <h2>Jikoku</h2>
-  <p th:text="${hour.toString()}" /> 
-  <p th:text="${minute.toString()}" /> 
+  <table>
+    <tr>
+      <th>Hour</th>
+      <th>Minute</th>
+    </tr>
+    <tr th:each="element, elementStat : ${hour}">
+      <td th:text="${element}"/>
+      <td th:text="${minute[elementStat.index]}"/>
+    </tr>      
+  </table>
 </body>
 </html>
