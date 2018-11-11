@@ -1,11 +1,9 @@
 package com.departure.shihatsu.web;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-
-import javax.validation.constraints.Min;
+import java.util.LinkedHashMap;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,16 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
-import com.departure.shihatsu.domain.Minute;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 @Controller
 @RequestMapping("/jikoku")
 public class EkiJikokuController {
 
     @RequestMapping(method = RequestMethod.GET)
-    public String jukoku(Model model) throws URISyntaxException,IOException {
+    public String side(Model model) throws URISyntaxException {
         String ekey=System.getenv("EKEY");
         String stationCode = "22602";
         String code = "1150";
@@ -31,34 +27,41 @@ public class EkiJikokuController {
         URI uri = new URI(ekiUrl);
         RestTemplate restTemplate = new RestTemplate();
 
-        String resultStr = restTemplate.getForObject(ekiUrl, String.class);
-        ObjectMapper mapper = new ObjectMapper();
+        LinkedHashMap result = new LinkedHashMap<>();
 
-        JsonNode root = mapper.readTree(resultStr);
-        JsonNode resultSet = root.get("ResultSet");
-        JsonNode timeTable = resultSet.get("TimeTable");
-        JsonNode station = timeTable.get("Station");
-        String info = station.toString();
+        result = restTemplate.getForObject(ekiUrl, LinkedHashMap.class);
+        Object resultObj = new Gson().toJson(result, Object.class);
+        LinkedHashMap resultSet = (LinkedHashMap) result.get("ResultSet");
+        LinkedHashMap timeTable = (LinkedHashMap) resultSet.get("TimeTable");
+        LinkedHashMap info = (LinkedHashMap) timeTable.get("Station");
         
-        ArrayList<Object> hour = new ArrayList<>();
-        ArrayList<ArrayList<Minute>> minuteTable = new ArrayList<>();
-        for (JsonNode node : timeTable.get("HourTable")){
-            hour.add(node.get("Hour").asText());
-            ArrayList<Minute> minute = new ArrayList<>();
-            for (JsonNode node2 : node.get("MinuteTable")){
-                Minute local_minute = new Minute();
-                local_minute.setMinute(node2.get("Minute").asText());
-                if (node2.get("Stop").get("first") != null){
-                    local_minute.setIsFirst(node2.get("Stop").get("first").asText());
-                } 
-                minute.add(local_minute);
+        ArrayList jikoku = new ArrayList<>();
+        jikoku = (ArrayList) timeTable.get("HourTable");
+
+        System.out.println(jikoku.size());
+
+        ArrayList<Integer> hour = new ArrayList<>();
+        ArrayList<String> minuteList = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> minuteTable = new ArrayList<>();
+        for(Object object : jikoku){
+            LinkedHashMap linkedHashMap = (LinkedHashMap) object;
+            Object hourObject = linkedHashMap.get("Hour");
+            hour.add(Integer.valueOf(hourObject.toString()));
+            minuteList = (ArrayList) linkedHashMap.get("MinuteTable");
+            ArrayList<Integer> minute = new ArrayList<>();
+            for(Object object2 : minuteList){
+                LinkedHashMap linkedHashMap2 = (LinkedHashMap) object2;
+                Object minuteObject = linkedHashMap2.get("Minute");
+                minute.add(Integer.parseInt(minuteObject.toString()));
             }
+            Integer hourCurrent = Integer.valueOf(hourObject.toString());
             minuteTable.add(minute);
         }
-
-        model.addAttribute("info",info);
+        
+        model.addAttribute("info",info.toString());
         model.addAttribute("hour",hour);
         model.addAttribute("minute",minuteTable);
-        return "main/jikoku";
+        return "main/main";
     }
+
 }
