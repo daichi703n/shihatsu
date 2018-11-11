@@ -1,24 +1,30 @@
 package com.departure.shihatsu.web;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import com.departure.shihatsu.domain.TimeTable;
+import com.departure.shihatsu.domain.TimeTableResultSet;
+
+import org.apache.catalina.webresources.Cache;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/jikoku")
 public class EkiJikokuController {
 
     @RequestMapping(method = RequestMethod.GET)
-    public String side(Model model) throws URISyntaxException {
+    public String jukoku(Model model) throws URISyntaxException {
         String ekey=System.getenv("EKEY");
         String stationCode = "22602";
         String code = "1150";
@@ -30,15 +36,36 @@ public class EkiJikokuController {
         LinkedHashMap result = new LinkedHashMap<>();
 
         result = restTemplate.getForObject(ekiUrl, LinkedHashMap.class);
-        Object resultObj = new Gson().toJson(result, Object.class);
+
+        String resultStr = restTemplate.getForObject(ekiUrl, String.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+        TimeTableResultSet timeTableResultSet = new TimeTableResultSet();
+
+        try{
+            JsonNode root = mapper.readTree(resultStr);
+            System.out.println(root.toString());
+            timeTableResultSet = mapper.readValue(resultStr, TimeTableResultSet.class);
+            // System.out.println(resultStr);
+            // System.out.println("ResultSet: "+timeTableResultSet.getClass());
+            // System.out.println("ResultSet: "+timeTableResultSet.getResultSet());
+            System.out.println("apiVersion: "+timeTableResultSet.getApiVersion());
+            System.out.println("engineVersion: "+timeTableResultSet.engineVersion);
+            
+            ObjectMapper mapper2 = new ObjectMapper();
+            TimeTable timeTable = new TimeTable();
+            // System.out.println(timeTableResultSet.timeTable);
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
         LinkedHashMap resultSet = (LinkedHashMap) result.get("ResultSet");
         LinkedHashMap timeTable = (LinkedHashMap) resultSet.get("TimeTable");
         LinkedHashMap info = (LinkedHashMap) timeTable.get("Station");
         
         ArrayList jikoku = new ArrayList<>();
         jikoku = (ArrayList) timeTable.get("HourTable");
-
-        System.out.println(jikoku.size());
 
         ArrayList<Integer> hour = new ArrayList<>();
         ArrayList<String> minuteList = new ArrayList<>();

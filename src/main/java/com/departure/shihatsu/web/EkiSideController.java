@@ -1,9 +1,9 @@
 package com.departure.shihatsu.web;
 
-import java.net.URI;
+// import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.springframework.http.*;
+// import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,10 +19,10 @@ public class EkiSideController {
     public String side(Model model) throws URISyntaxException {
         String ekey=System.getenv("EKEY");
         String ekiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode=22602&code=1150";
-        Object list="";
-        URI uri = new URI(ekiUrl);
+        // Object list="";
+        // URI uri = new URI(ekiUrl);
         RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
-        HttpHeaders headers;
+        // HttpHeaders headers;
 
         //HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
         //ResponseEntity<String> responseEntity = rest.exchange(server + uri, HttpMethod.GET, requestEntity, String.class);
