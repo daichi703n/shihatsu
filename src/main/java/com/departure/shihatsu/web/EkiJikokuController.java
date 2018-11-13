@@ -4,12 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
-import com.departure.shihatsu.domain.TimeTable;
-import com.departure.shihatsu.domain.TimeTableResultSet;
-
-import org.apache.catalina.webresources.Cache;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class EkiJikokuController {
 
     @RequestMapping(method = RequestMethod.GET)
-    public String jukoku(Model model) throws URISyntaxException {
+    public String jukoku(Model model) throws URISyntaxException,IOException {
         String ekey=System.getenv("EKEY");
         String stationCode = "22602";
         String code = "1150";
@@ -33,62 +28,29 @@ public class EkiJikokuController {
         URI uri = new URI(ekiUrl);
         RestTemplate restTemplate = new RestTemplate();
 
-        LinkedHashMap result = new LinkedHashMap<>();
-
-        result = restTemplate.getForObject(ekiUrl, LinkedHashMap.class);
-
         String resultStr = restTemplate.getForObject(ekiUrl, String.class);
-
         ObjectMapper mapper = new ObjectMapper();
-        TimeTableResultSet timeTableResultSet = new TimeTableResultSet();
 
-        try{
-            JsonNode root = mapper.readTree(resultStr);
-            System.out.println(root.toString());
-            timeTableResultSet = mapper.readValue(resultStr, TimeTableResultSet.class);
-            // System.out.println(resultStr);
-            // System.out.println("ResultSet: "+timeTableResultSet.getClass());
-            // System.out.println("ResultSet: "+timeTableResultSet.getResultSet());
-            System.out.println("apiVersion: "+timeTableResultSet.getApiVersion());
-            System.out.println("engineVersion: "+timeTableResultSet.engineVersion);
-            
-            ObjectMapper mapper2 = new ObjectMapper();
-            TimeTable timeTable = new TimeTable();
-            // System.out.println(timeTableResultSet.timeTable);
-
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-        LinkedHashMap resultSet = (LinkedHashMap) result.get("ResultSet");
-        LinkedHashMap timeTable = (LinkedHashMap) resultSet.get("TimeTable");
-        LinkedHashMap info = (LinkedHashMap) timeTable.get("Station");
+        JsonNode root = mapper.readTree(resultStr);
+        JsonNode resultSet = root.get("ResultSet");
+        JsonNode timeTable = resultSet.get("TimeTable");
+        JsonNode station = timeTable.get("Station");
+        String info = station.toString();
         
-        ArrayList jikoku = new ArrayList<>();
-        jikoku = (ArrayList) timeTable.get("HourTable");
-
-        ArrayList<Integer> hour = new ArrayList<>();
-        ArrayList<String> minuteList = new ArrayList<>();
-        ArrayList<ArrayList<Integer>> minuteTable = new ArrayList<>();
-        for(Object object : jikoku){
-            LinkedHashMap linkedHashMap = (LinkedHashMap) object;
-            Object hourObject = linkedHashMap.get("Hour");
-            hour.add(Integer.valueOf(hourObject.toString()));
-            minuteList = (ArrayList) linkedHashMap.get("MinuteTable");
-            ArrayList<Integer> minute = new ArrayList<>();
-            for(Object object2 : minuteList){
-                LinkedHashMap linkedHashMap2 = (LinkedHashMap) object2;
-                Object minuteObject = linkedHashMap2.get("Minute");
-                minute.add(Integer.parseInt(minuteObject.toString()));
+        ArrayList<String> hour = new ArrayList<>();
+        ArrayList<String> minuteTable = new ArrayList<>();
+        for (JsonNode node : timeTable.get("HourTable")){
+            hour.add(node.get("Hour").toString());
+            ArrayList<String> minute = new ArrayList<>();
+            for (JsonNode node2 : node.get("MinuteTable")){
+                minute.add(node2.get("Minute").asText());
             }
-            Integer hourCurrent = Integer.valueOf(hourObject.toString());
-            minuteTable.add(minute);
+            minuteTable.add(minute.toString());
         }
-        
-        model.addAttribute("info",info.toString());
+
+        model.addAttribute("info",info);
         model.addAttribute("hour",hour);
         model.addAttribute("minute",minuteTable);
         return "main/main";
     }
-
 }
