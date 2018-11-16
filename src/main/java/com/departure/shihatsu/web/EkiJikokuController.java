@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
+import com.departure.shihatsu.domain.Minute;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,12 +39,17 @@ public class EkiJikokuController {
         String info = station.toString();
         
         ArrayList<String> hour = new ArrayList<>();
-        ArrayList<String> minuteTable = new ArrayList<>();
+        ArrayList<Object> minuteTable = new ArrayList<>();
         for (JsonNode node : timeTable.get("HourTable")){
             hour.add(node.get("Hour").toString());
             ArrayList<String> minute = new ArrayList<>();
             for (JsonNode node2 : node.get("MinuteTable")){
-                minute.add(node2.get("Minute").asText());
+                Minute local_minute = new Minute();
+                local_minute.minute = node2.get("Minute").asText();
+                if (node2.get("Stop").get("first") != null){
+                    local_minute.is_first = node2.get("Stop").get("first").asText();
+                } 
+                minute.add(mapper.writeValueAsString(local_minute));
             }
             minuteTable.add(minute.toString());
         }
