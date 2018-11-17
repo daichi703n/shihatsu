@@ -57,6 +57,6 @@ public class EkiJikokuController {
         model.addAttribute("info",info);
         model.addAttribute("hour",hour);
         model.addAttribute("minute",minuteTable);
-        return "main/main";
+        return "main/jikoku";
     }
 }

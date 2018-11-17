@@ -5,12 +5,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-  <h1>Main</h1>
+  <div th:replace="fragments/header :: header">Header</div>
+  <h1>Jikoku</h1>
   <h2>Information</h2>
   <p th:text="${info}" /> 
   <h2>Ad</h2>
-  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <!-- departure -->
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <ins class="adsbygoogle"
     style="display:block"
     data-ad-client="ca-pub-6470019750016063"
@@ -20,6 +21,7 @@
   <script>
   (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
+  <!-- departure -->
   <h2>Jikoku</h2>
   <table>
     <tr>
@@ -31,5 +33,6 @@
       <td th:text="${minute[elementStat.index]}"/>
     </tr>      
   </table>
+  <div th:replace="fragments/footer :: footer">&copy; Footer</div>
 </body>
 </html>
