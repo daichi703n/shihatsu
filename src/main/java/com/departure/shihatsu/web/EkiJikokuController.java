@@ -45,9 +45,9 @@ public class EkiJikokuController {
             ArrayList<String> minute = new ArrayList<>();
             for (JsonNode node2 : node.get("MinuteTable")){
                 Minute local_minute = new Minute();
-                local_minute.minute = node2.get("Minute").asText();
+                local_minute.setMinute(node2.get("Minute").asText());
                 if (node2.get("Stop").get("first") != null){
-                    local_minute.is_first = node2.get("Stop").get("first").asText();
+                    local_minute.setIsFirst(node2.get("Stop").get("first").asText());
                 } 
                 minute.add(mapper.writeValueAsString(local_minute));
             }
