@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+  <div th:fragment="head">
+      <title>Deperture - Shihatsu</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />  
+  </div>
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top" th:fragment="header">
-  <div class="container">
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet" />
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
         <span class="icon-bar"></span>
