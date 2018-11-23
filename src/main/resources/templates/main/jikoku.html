@@ -34,9 +34,11 @@
       </thead>
       <tr th:each="h, hStat : ${hour}" scope="row">
         <td th:text="${h.toString()}"/>
-        <span th:each="m, mStat : ${minute[hStat.index]}">
-          <td th:text="${m.getMinute()}" th:classappend="${(m.getIsFirst().equals('True') ? 'font-weight-bold' : 'text-secondary')}"/>
-        </span>
+        <td>
+          <span th:each="m, mStat : ${minute[hStat.index]}">
+            <span th:text="${m.getMinute()}" class="mr-2" th:classappend="${(m.getIsFirst().equals('True') ? 'font-weight-bold' : 'text-secondary')}"/>
+          </span>
+        </td>
       </tr>
     </table>
   </div>
