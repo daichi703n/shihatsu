@@ -4,6 +4,7 @@
   <div th:replace="fragments/header :: head">Head</div>
 <title>Deperture - Shihatsu</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="/js/hideNotFirst.js"></script>
   </head>
 <body>
   <div th:replace="fragments/header :: header">Header</div>
@@ -25,6 +26,11 @@
     </script>
     <!-- departure -->
     <h2>Jikoku</h2>
+    <div class="btn-group-toggle" data-toggle="buttons">
+      <label class="btn btn-primary active" onclick="hideNotFirst()">
+        <input type="checkbox" autocomplete="off" checked> 始発のみ表示
+      </label>
+    </div>
     <table class="table table-striped">
       <thead class="thead-dark">
         <tr>
@@ -36,8 +42,8 @@
         <td th:text="${h.toString()}"/>
         <td>
           <span th:each="m, mStat : ${minute[hStat.index]}">
-            <span th:text="${m.getMinute()}" class="mr-2" th:classappend="${(m.getIsFirst().equals('True') ? 'font-weight-bold' : 'text-secondary')}"/>
-          </span>
+            <span th:text="${m.getMinute()}" class="mr-2" th:classappend="${(m.getIsFirst().equals('True') ? 'font-weight-bold' : 'notFirst text-secondary')}"/>
+            </span>
         </td>
       </tr>
     </table>
