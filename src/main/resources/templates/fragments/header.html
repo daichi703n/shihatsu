@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <div th:fragment="head">
-      <title>Deperture - Shihatsu</title>
+      <title>始発.com</title>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />  
   </div>
 </head>
@@ -12,7 +12,7 @@
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
     <div class="container">
-      <a class="navbar-brand" href="#">Shihatsu.com</a>
+      <a class="navbar-brand" href="#">始発.com</a>
     <!-- <div class="navbar-header"> -->
       <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="true" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -26,7 +26,7 @@
           <a class="nav-link" href="#" th:href="@{/}">Home</a>
         </li>
         <li class="nav-item active" th:classappend="${module == 'jikoku' ? 'active' : ''}">
-          <a class="nav-link" href="#" th:href="@{/jikoku}">Jikoku</a>
+          <a class="nav-link" href="#" th:href="@{/jikoku}">始発表</a>
         </li>
         <!-- <li th:classappend="${module == 'tasks-ld' ? 'active' : ''}">
           <a href="#" th:href="@{/task-ld}">Tasks (Layout Dialect)</a>
