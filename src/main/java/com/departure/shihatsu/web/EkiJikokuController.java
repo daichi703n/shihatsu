@@ -5,8 +5,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import javax.validation.constraints.Min;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,25 +38,25 @@ public class EkiJikokuController {
         JsonNode station = timeTable.get("Station");
         String info = station.toString();
         
-        ArrayList<Object> hour = new ArrayList<>();
-        ArrayList<ArrayList<Minute>> minuteTable = new ArrayList<>();
+        ArrayList<String> hour = new ArrayList<>();
+        ArrayList<Object> minuteTable = new ArrayList<>();
         for (JsonNode node : timeTable.get("HourTable")){
-            hour.add(node.get("Hour").asText());
-            ArrayList<Minute> minute = new ArrayList<>();
+            hour.add(node.get("Hour").toString());
+            ArrayList<String> minute = new ArrayList<>();
             for (JsonNode node2 : node.get("MinuteTable")){
                 Minute local_minute = new Minute();
-                local_minute.setMinute(node2.get("Minute").asText());
+                local_minute.minute = node2.get("Minute").asText();
                 if (node2.get("Stop").get("first") != null){
-                    local_minute.setIsFirst(node2.get("Stop").get("first").asText());
+                    local_minute.is_first = node2.get("Stop").get("first").asText();
                 } 
-                minute.add(local_minute);
+                minute.add(mapper.writeValueAsString(local_minute));
             }
-            minuteTable.add(minute);
+            minuteTable.add(minute.toString());
         }
 
         model.addAttribute("info",info);
         model.addAttribute("hour",hour);
         model.addAttribute("minute",minuteTable);
-        return "main/jikoku";
+        return "main/main";
     }
 }
