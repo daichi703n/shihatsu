@@ -2,16 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <div th:replace="fragments/header :: head">Head</div>
-<title>Deperture - Shihatsu</title>
+<title>始発時刻表 - 始発.com</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="/js/hideNotFirst.js"></script>
   </head>
 <body>
   <div th:replace="fragments/header :: header">Header</div>
   <div class="container">
-    <h1>Jikoku</h1>
-    <h2>Information</h2>
+    <h1>始発表</h1>
+    <h2>路線情報</h2>
     <p th:text="${info}" /> 
-    <h2>Ad</h2>
+    <h3>スポンサーリンク</h3>
     <!-- departure -->
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <ins class="adsbygoogle"
@@ -24,20 +25,25 @@
     (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     <!-- departure -->
-    <h2>Jikoku</h2>
+    <h2>時刻表</h2>
+    <div class="btn-group-toggle" data-toggle="buttons">
+      <label class="btn btn-primary active" onclick="hideNotFirst()">
+        <input type="checkbox" autocomplete="off" checked> 始発のみ表示
+      </label>
+    </div>
     <table class="table table-striped">
       <thead class="thead-dark">
         <tr>
-          <th scope="col">Hour</th>
-          <th scope="col">Minute</th>
+          <th scope="col">時</th>
+          <th scope="col">分</th>
         </tr>
       </thead>
       <tr th:each="h, hStat : ${hour}" scope="row">
         <td th:text="${h.toString()}"/>
         <td>
           <span th:each="m, mStat : ${minute[hStat.index]}">
-            <span th:text="${m.getMinute()}" class="mr-2" th:classappend="${(m.getIsFirst().equals('True') ? 'font-weight-bold' : 'text-secondary')}"/>
-          </span>
+            <span th:text="${m.getMinute()}" class="mr-2" th:classappend="${(m.getIsFirst().equals('True') ? 'font-weight-bold' : 'notFirst text-secondary')}"/>
+            </span>
         </td>
       </tr>
     </table>
