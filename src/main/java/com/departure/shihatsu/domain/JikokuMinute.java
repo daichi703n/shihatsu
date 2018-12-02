@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Minute {
+public class JikokuMinute {
   private String minute;
   private String isFirst = "False";
 }
