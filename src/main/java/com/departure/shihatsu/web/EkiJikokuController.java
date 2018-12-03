@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.validation.constraints.Min;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,12 +29,19 @@ public class EkiJikokuController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ConfigurationProperties(prefix="secret")
-    public String jukoku(Model model) throws URISyntaxException,IOException {
+    public String jukoku(
+        @RequestParam Map<String, String> queryParameters, 
+        Model model
+    ) throws URISyntaxException,IOException {
         // TODO: キーの取り方を改善したい
         String ekey=System.getenv("EKEY");
-        String stationCode = "22602";
-        String code = "1150";
 
+        // String stationCode = "22602";
+        // String code = "1150";
+        String stationCode = queryParameters.get("stationCode");
+        String code = queryParameters.get("code");
+        // TODO: エラーハンドリング
+        
         String ekiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode="+stationCode+"&code="+code;
         URI uri = new URI(ekiUrl);
         RestTemplate restTemplate = new RestTemplate();
