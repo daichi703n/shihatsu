@@ -25,8 +25,13 @@
         <li class="nav-item active" th:classappend="${module == 'home' ? 'active' : ''} ">
           <a class="nav-link" href="#" th:href="@{/}">Home</a>
         </li>
+        <li class="nav-item active" th:classappend="${module == 'home' ? 'active' : ''} ">
+          <a class="nav-link" href="#" th:href="@{/line?stationCode=22602&code=1150}">路線</a>
+          <!-- <a class="nav-link" href="#" th:href="@{/line}">路線</a> -->
+        </li>
         <li class="nav-item active" th:classappend="${module == 'jikoku' ? 'active' : ''}">
-          <a class="nav-link" href="#" th:href="@{/jikoku}">始発表</a>
+          <a class="nav-link" href="#" th:href="@{/jikoku?stationCode=22602&code=1150}">始発表</a>
+          <!-- <a class="nav-link" href="#" th:href="@{/jikoku}">始発表</a> -->
         </li>
         <!-- <li th:classappend="${module == 'tasks-ld' ? 'active' : ''}">
           <a href="#" th:href="@{/task-ld}">Tasks (Layout Dialect)</a>
