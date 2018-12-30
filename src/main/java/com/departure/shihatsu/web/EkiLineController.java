@@ -1,5 +1,6 @@
 package com.departure.shihatsu.web;
 
+import java.awt.List;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,6 +19,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import com.departure.shihatsu.domain.JikokuMinute;
+import com.departure.shihatsu.domain.Corporation;
+import com.departure.shihatsu.domain.LineList;
 import com.departure.shihatsu.domain.JikokuInfo;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,51 +41,43 @@ public class EkiLineController {
 
         // String stationCode = "22602";
         // String code = "1150";
-        String stationCode = queryParameters.get("stationCode");
-        String code = queryParameters.get("code");
+        String prefectureCode = queryParameters.get("prefectureCode");
+        String operationLineCode = queryParameters.get("operationLineCode");
+        if (prefectureCode==null) {prefectureCode = "13";};
+        if (operationLineCode==null) {operationLineCode = "13";};
         // TODO: エラーハンドリング
         
-        String ekiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode="+stationCode+"&code="+code;
-        URI uri = new URI(ekiUrl);
+        String operationLineUrl="https://api.ekispert.jp/v1/json/operationLine?key="+ekey+"&prefectureCode="+prefectureCode;
+        URI uri = new URI(operationLineUrl);
         RestTemplate restTemplate = new RestTemplate();
 
         // TODO: エラーハンドリング
-        String resultStr = restTemplate.getForObject(ekiUrl, String.class);
+        String resultStr = restTemplate.getForObject(operationLineUrl, String.class);
         ObjectMapper mapper = new ObjectMapper();
 
         // TODO: info取得方法を改善したい
         JsonNode root = mapper.readTree(resultStr);
         JsonNode resultSet = root.get("ResultSet");
-        JsonNode timeTable = resultSet.get("TimeTable");
-        JsonNode station = timeTable.get("Station");
-        String info = station.toString();
+        Corporation[] corporation = mapper.readValue(resultSet.get("Corporation").toString(), Corporation[].class);
+        LineList[] lineList = mapper.readValue(resultSet.get("Line").toString(), LineList[].class);
 
-        JikokuInfo jikokuInfo = new JikokuInfo();
-        jikokuInfo.setStationName(timeTable.get("Station").get("Name").asText());
-        jikokuInfo.setLineName(timeTable.get("Line").get("Name").asText());
-        jikokuInfo.setLineDir(timeTable.get("Line").get("Direction").asText());
-
-        // System.out.println(jikokuInfo);
-        
         ArrayList<Object> hour = new ArrayList<>();
         ArrayList<ArrayList<JikokuMinute>> minuteTable = new ArrayList<>();
-        for (JsonNode node : timeTable.get("HourTable")){
-            hour.add(node.get("Hour").asText());
-            ArrayList<JikokuMinute> minute = new ArrayList<>();
-            for (JsonNode node2 : node.get("MinuteTable")){
-                JikokuMinute local_minute = new JikokuMinute();
-                local_minute.setMinute(node2.get("Minute").asText());
-                if (node2.get("Stop").get("first") != null){
-                    local_minute.setIsFirst(node2.get("Stop").get("first").asText());
-                } 
-                minute.add(local_minute);
-            }
-            minuteTable.add(minute);
-        }
+        // for (JsonNode node : timeTable.get("HourTable")){
+        //     hour.add(node.get("Hour").asText());
+        //     ArrayList<JikokuMinute> minute = new ArrayList<>();
+        //     for (JsonNode node2 : node.get("MinuteTable")){
+        //         JikokuMinute local_minute = new JikokuMinute();
+        //         local_minute.setMinute(node2.get("Minute").asText());
+        //         if (node2.get("Stop").get("first") != null){
+        //             local_minute.setIsFirst(node2.get("Stop").get("first").asText());
+        //         } 
+        //         minute.add(local_minute);
+        //     }
+        //     minuteTable.add(minute);
+        // }
 
-        model.addAttribute("info",jikokuInfo);
-        model.addAttribute("hour",hour);
-        model.addAttribute("minute",minuteTable);
+        model.addAttribute("lineList",lineList);
         return "main/line";
     }
 }
