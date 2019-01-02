@@ -78,6 +78,7 @@ public class EkiLineController {
         // }
 
         model.addAttribute("lineList",lineList);
+        model.addAttribute("corporation",corporation);
         return "main/line";
     }
 }
