@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import com.departure.shihatsu.domain.JikokuMinute;
 import com.departure.shihatsu.domain.Corporation;
 import com.departure.shihatsu.domain.LineList;
+import com.departure.shihatsu.domain.StationList;
 import com.departure.shihatsu.domain.JikokuInfo;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,7 +45,7 @@ public class EkiLineController {
         String prefectureCode = queryParameters.get("prefectureCode");
         String operationLineCode = queryParameters.get("operationLineCode");
         if (prefectureCode==null) {prefectureCode = "13";};
-        if (operationLineCode==null) {operationLineCode = "13";};
+        // if (operationLineCode==null) {operationLineCode = "115";};
         // TODO: エラーハンドリング
         
         String operationLineUrl="https://api.ekispert.jp/v1/json/operationLine?key="+ekey+"&prefectureCode="+prefectureCode;
@@ -60,25 +61,27 @@ public class EkiLineController {
         JsonNode resultSet = root.get("ResultSet");
         Corporation[] corporation = mapper.readValue(resultSet.get("Corporation").toString(), Corporation[].class);
         LineList[] lineList = mapper.readValue(resultSet.get("Line").toString(), LineList[].class);
-
-        ArrayList<Object> hour = new ArrayList<>();
-        ArrayList<ArrayList<JikokuMinute>> minuteTable = new ArrayList<>();
-        // for (JsonNode node : timeTable.get("HourTable")){
-        //     hour.add(node.get("Hour").asText());
-        //     ArrayList<JikokuMinute> minute = new ArrayList<>();
-        //     for (JsonNode node2 : node.get("MinuteTable")){
-        //         JikokuMinute local_minute = new JikokuMinute();
-        //         local_minute.setMinute(node2.get("Minute").asText());
-        //         if (node2.get("Stop").get("first") != null){
-        //             local_minute.setIsFirst(node2.get("Stop").get("first").asText());
-        //         } 
-        //         minute.add(local_minute);
-        //     }
-        //     minuteTable.add(minute);
-        // }
-
+        
         model.addAttribute("lineList",lineList);
         model.addAttribute("corporation",corporation);
+
+        StationList[] stationList = null;
+        // Get Station Info
+        if(operationLineCode!=null){
+            String stationListUrl="https://api.ekispert.jp/v1/json/station?key="+ekey+"&operationLineCode="+operationLineCode;
+            RestTemplate stationRestTemplate = new RestTemplate();
+            String stationResultStr = stationRestTemplate.getForObject(stationListUrl, String.class);
+            JsonNode stationResultSet = mapper.readTree(stationResultStr).get("ResultSet");
+            ObjectMapper stationMapper = new ObjectMapper();
+            stationList = stationMapper.readValue(stationResultSet.get("Point").toString(), StationList[].class);
+        }else{
+            
+        }
+
+        model.addAttribute("stationList", stationList);
+        model.addAttribute("prefectureCode", prefectureCode);
+        model.addAttribute("operationLineCode", operationLineCode);
+
         return "main/line";
     }
 }

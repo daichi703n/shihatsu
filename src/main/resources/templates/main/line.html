@@ -17,26 +17,19 @@
           <li th:each="line, lineStat: ${lineList}" 
               th:if="${line.getCorporationIndex()} == ${corporationStat.count}">
             [[${line.getName()}]]
+            <ul>
+              <li th:each="station, stationStat: ${stationList}"
+                  th:if="${station.getPrefecture().getCode()} == ${prefectureCode}
+                          and ${line.getCode()} == ${operationLineCode}">
+                [[${station.getStation().getName()}]]
+              </li>
+            </ul>
           </li>
         </ul>
       </li>
     </ul>
-    <!-- <table class="table table-striped">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col">路線</th>
-          <th scope="col" th:text="${info.getLineName()}"></th>
-        </tr>
-      </thead>
-      <tr>
-        <td scope="row">駅名</td>
-        <td scoppe="row" th:text="${info.getStationName()}"/>
-      </tr>
-      <tr>
-        <td scope="row">行先・方面</td>
-        <td scope="row" th:text="${info.getLineDir()}"/>
-      </tr>
-    </table> -->
+
+  
     <h3>スポンサーリンク</h3>
     <!-- departure -->
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
