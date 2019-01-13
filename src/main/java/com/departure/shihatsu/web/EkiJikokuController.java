@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.List;
 
 import javax.validation.constraints.Min;
 
@@ -40,12 +41,28 @@ public class EkiJikokuController {
         // String code = "1150";
         String stationCode = queryParameters.get("stationCode");
         String code = queryParameters.get("code");
+        String lineName = queryParameters.get("line");
         // TODO: エラーハンドリング
         
+        // 駅情報一覧を取得して当該路線の最初のcodeを取得する
+        if (code == null){
+            String tmpEkiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode="+stationCode;
+            RestTemplate tmpRestTemplate = new RestTemplate();
+            String tmpResultStr = tmpRestTemplate.getForObject(tmpEkiUrl, String.class);
+            ObjectMapper tmpMapper = new ObjectMapper();
+            JsonNode tmpTimeTable = tmpMapper.readTree(tmpResultStr).get("ResultSet").get("TimeTable");
+
+            List<String> tmpList = new ArrayList<>();
+            for (Object obj : tmpTimeTable) {
+                tmpList.add((String) obj.toString());
+                if (obj.toString().indexOf(lineName) != -1){break;}
+            }
+            code = tmpTimeTable.get(tmpList.size()-1).get("code").asText();
+        }
         String ekiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode="+stationCode+"&code="+code;
         URI uri = new URI(ekiUrl);
         RestTemplate restTemplate = new RestTemplate();
-
+        
         // TODO: エラーハンドリング
         String resultStr = restTemplate.getForObject(ekiUrl, String.class);
         ObjectMapper mapper = new ObjectMapper();
