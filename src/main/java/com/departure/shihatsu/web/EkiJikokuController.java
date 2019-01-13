@@ -79,20 +79,32 @@ public class EkiJikokuController {
         jikokuInfo.setLineName(timeTable.get("Line").get("Name").asText());
         jikokuInfo.setLineDir(timeTable.get("Line").get("Direction").asText());
 
-        // System.out.println(jikokuInfo);
+        // NOTE: MinuteTableは単一のときは配列でない。
         
         ArrayList<Object> hour = new ArrayList<>();
         ArrayList<ArrayList<JikokuMinute>> minuteTable = new ArrayList<>();
         for (JsonNode node : timeTable.get("HourTable")){
             hour.add(node.get("Hour").asText());
             ArrayList<JikokuMinute> minute = new ArrayList<>();
-            for (JsonNode node2 : node.get("MinuteTable")){
+            switch (node.get("MinuteTable").getClass().toString()) {
+            case "class com.fasterxml.jackson.databind.node.ArrayNode":
+                for (JsonNode node2 : node.get("MinuteTable")){
+                    JikokuMinute local_minute = new JikokuMinute();
+                    local_minute.setMinute(node2.get("Minute").asText());
+                    if (node2.get("Stop").get("first") != null){
+                        local_minute.setIsFirst(node2.get("Stop").get("first").asText());
+                    }
+                    minute.add(local_minute);
+                }
+                break;
+            case "class com.fasterxml.jackson.databind.node.ObjectNode":
                 JikokuMinute local_minute = new JikokuMinute();
-                local_minute.setMinute(node2.get("Minute").asText());
-                if (node2.get("Stop").get("first") != null){
-                    local_minute.setIsFirst(node2.get("Stop").get("first").asText());
-                } 
+                local_minute.setMinute(node.get("MinuteTable").get("Minute").asText());
+                if (node.get("MinuteTable").get("Stop").get("first") != null){
+                    local_minute.setIsFirst(node.get("MinuteTable").get("Stop").get("first").asText());
+                }
                 minute.add(local_minute);
+                break;
             }
             minuteTable.add(minute);
         }
