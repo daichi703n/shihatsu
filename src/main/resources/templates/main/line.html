@@ -16,12 +16,12 @@
         <ul>
           <li th:each="line, lineStat: ${lineList}" 
               th:if="${line.getCorporationIndex()} == ${corporationStat.count}">
-            [[${line.getName()}]]
+            <a th:href="@{/line(prefectureCode=${prefectureCode},operationLineCode=${line.getCode()})}">[[${line.getName()}]]</a>
             <ul>
               <li th:each="station, stationStat: ${stationList}"
                   th:if="${station.getPrefecture().getCode()} == ${prefectureCode}
                           and ${line.getCode()} == ${operationLineCode}">
-                [[${station.getStation().getName()}]]
+                <a th:href="@{/jikoku(stationCode=${station.getStation().getCode()},line=${line.getName()})}">[[${station.getStation().getName()}]]</a>
               </li>
             </ul>
           </li>
