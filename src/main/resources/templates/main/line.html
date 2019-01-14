@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <div th:replace="fragments/header :: head">Head</div>
+  <title>路線表 - 始発.com</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <script src="/js/hideNotFirst.js"></script>
+</head>
+<body>
+  <div th:replace="fragments/header :: header">Header</div>
+  <div class="container">
+    <h1>路線表</h1>
+    <h2>都道府県</h2>
+    <ul>
+      <li th:each="prefectureArea, prefectureAreaStat: ${prefectureAreas}">[[${prefectureArea.getArea()}]]
+        <ul>
+          <li th:each="prefecture, prefectureStat: ${prefectures}" 
+              th:if="${prefecture.getAreaCode()} == ${prefectureArea.getCode()}">
+            <a th:href="@{/line(prefectureCode=${prefecture.getCode()})}">[[${prefecture.getText()}]]</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h3>スポンサーリンク</h3>
+    <!-- departure -->
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-6470019750016063"
+      data-ad-slot="5017667087"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+    <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    <!-- departure -->
+    <h2>路線情報</h2>
+    <ul>
+      <li th:each="corporation, corporationStat: ${corporation}">[[${corporation.getName()}]]
+        <ul>
+          <li th:each="line, lineStat: ${lineList}" 
+              th:if="${line.getCorporationIndex()} == ${corporationStat.count}">
+            <a th:href="@{/line(prefectureCode=${prefectureCode},operationLineCode=${line.getCode()})}">[[${line.getName()}]]</a>
+            <ul>
+              <li th:each="station, stationStat: ${stationList}"
+                  th:if="${station.getPrefecture().getCode()} == ${prefectureCode}
+                          and ${line.getCode()} == ${operationLineCode}">
+                <a th:href="@{/jikoku(stationCode=${station.getStation().getCode()},line=${line.getName()})}">[[${station.getStation().getName()}]]</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+  
+  </div>
+  <div th:replace="fragments/footer :: footer">&copy; Footer</div>
+</body>
+</html>

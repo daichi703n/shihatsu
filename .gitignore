@@ -24,5 +24,8 @@
 /nbdist/
 /.nb-gradle/
 
+### Secret ###
+**/secret.yml
+
 ### Local ###
 memo
