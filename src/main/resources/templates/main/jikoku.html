@@ -2,14 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <div th:replace="fragments/header :: head">Head</div>
-<title>始発時刻表 - 始発.com</title>
+  <title th:text="'始発表 - ' + ${info.getLineName()} + ' ' + ${info.getStationName()} + ' | 始発.com'">始発.com</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="/js/hideNotFirst.js"></script>
   </head>
 <body>
   <div th:replace="fragments/header :: header">Header</div>
   <div class="container">
-    <h1>始発表</h1>
+    <h1>始発表 - <span th:text="${info.getLineName()}"/> <span th:text="${info.getStationName()}"/></h1>
     <h2>路線情報</h2>
     <table class="table table-striped">
       <thead class="thead-dark">
