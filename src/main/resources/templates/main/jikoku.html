@@ -3,9 +3,9 @@
 <head>
   <div th:replace="fragments/header :: head">Head</div>
   <title th:text="'始発表 - ' + ${info.getLineName()} + ' ' + ${info.getStationName()} + ' | 始発.com'">始発.com</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <script src="/js/hideNotFirst.js"></script>
-  </head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <script src="/js/hideNotFirst.js"></script>
+</head>
 <body>
   <div th:replace="fragments/header :: header">Header</div>
   <div class="container">
@@ -26,7 +26,17 @@
         <td scope="row">行先・方面</td>
         <td scope="row" th:text="${info.getLineDir()}"/>
       </tr>
-    </table>
+      <tr>
+          <td scope="row">曜日区分</td>
+          <td scope="row">
+            <span th:each="d, dStat : ${dateGroupEnums}">
+              <a th:href="@{/jikoku(stationCode=${stationCode},line=${info.getLineName()},dateGroup=${d.getType()})}">
+                <span th:text="${d.getTypeName()}" class="mr-2" th:classappend="${(d.getType().equals(info.getDateGroup()) ? 'font-weight-bold' : 'text-secondary')}"/>
+              </a>
+            </span>
+          </td> 
+        </tr>
+      </table>
     <h3>スポンサーリンク</h3>
     <!-- departure -->
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>

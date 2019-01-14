@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
+import javax.swing.plaf.synth.SynthTextAreaUI;
 import javax.validation.constraints.Min;
 
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import com.departure.shihatsu.domain.JikokuMinute;
+import com.departure.shihatsu.domain.DateGroupEnum;
 import com.departure.shihatsu.domain.JikokuInfo;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,14 +39,17 @@ public class EkiJikokuController {
         // TODO: キーの取り方を改善したい
         String ekey=System.getenv("EKEY");
 
-        // String stationCode = "22602";
-        // String code = "1150";
         String stationCode = queryParameters.get("stationCode");
         String code = queryParameters.get("code");
         String lineName = queryParameters.get("line");
+        String dateGroup = queryParameters.get("dateGroup");
+        if (dateGroup == null){dateGroup = "weekday";}
+        DateGroupEnum[] dateGroupEnums = DateGroupEnum.values();
+
         // TODO: エラーハンドリング
         
         // 駅情報一覧を取得して当該路線の最初のcodeを取得する
+        List<String> tmpList = new ArrayList<>();
         if (code == null){
             String tmpEkiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode="+stationCode;
             RestTemplate tmpRestTemplate = new RestTemplate();
@@ -52,14 +57,18 @@ public class EkiJikokuController {
             ObjectMapper tmpMapper = new ObjectMapper();
             JsonNode tmpTimeTable = tmpMapper.readTree(tmpResultStr).get("ResultSet").get("TimeTable");
 
-            List<String> tmpList = new ArrayList<>();
             for (Object obj : tmpTimeTable) {
+                if (obj.toString().indexOf(lineName) == -1){continue;}
                 tmpList.add((String) obj.toString());
-                if (obj.toString().indexOf(lineName) != -1){break;}
             }
             code = tmpTimeTable.get(tmpList.size()-1).get("code").asText();
         }
-        String ekiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode="+stationCode+"&code="+code;
+        String ekiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable"
+            +"?key="+ekey
+            +"&stationCode="+stationCode
+            +"&code="+code
+            +"&dateGroup="+dateGroup
+            ;
         URI uri = new URI(ekiUrl);
         RestTemplate restTemplate = new RestTemplate();
         
@@ -78,6 +87,7 @@ public class EkiJikokuController {
         jikokuInfo.setStationName(timeTable.get("Station").get("Name").asText());
         jikokuInfo.setLineName(timeTable.get("Line").get("Name").asText());
         jikokuInfo.setLineDir(timeTable.get("Line").get("Direction").asText());
+        jikokuInfo.setDateGroup(timeTable.get("dateGroup").asText());
 
         // NOTE: MinuteTableは単一のときは配列でない。
         
@@ -112,6 +122,9 @@ public class EkiJikokuController {
         model.addAttribute("info",jikokuInfo);
         model.addAttribute("hour",hour);
         model.addAttribute("minute",minuteTable);
+        model.addAttribute("dateGroup",dateGroup);
+        model.addAttribute("dateGroupEnums",dateGroupEnums);
+        model.addAttribute("stationCode",stationCode);
         return "main/jikoku";
     }
 }

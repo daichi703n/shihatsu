@@ -9,4 +9,5 @@ public class JikokuInfo {
   private String stationName;
   private String lineName;
   private String lineDir;
+  private String dateGroup;
 }
