@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Bean;
 import com.departure.shihatsu.domain.JikokuMinute;
 import com.departure.shihatsu.domain.Corporation;
 import com.departure.shihatsu.domain.LineList;
+import com.departure.shihatsu.domain.PrefectureAreaEnum;
+import com.departure.shihatsu.domain.PrefectureEnum;
 import com.departure.shihatsu.domain.StationList;
 import com.departure.shihatsu.domain.JikokuInfo;
 
@@ -40,12 +42,14 @@ public class EkiLineController {
         // TODO: キーの取り方を改善したい
         String ekey=System.getenv("EKEY");
 
-        // String stationCode = "22602";
-        // String code = "1150";
         String prefectureCode = queryParameters.get("prefectureCode");
         String operationLineCode = queryParameters.get("operationLineCode");
         if (prefectureCode==null) {prefectureCode = "13";};
         // if (operationLineCode==null) {operationLineCode = "115";};
+
+        PrefectureAreaEnum[] prefectureAreas = PrefectureAreaEnum.values();
+        PrefectureEnum[] prefectures = PrefectureEnum.values();
+
         // TODO: エラーハンドリング
         
         String operationLineUrl="https://api.ekispert.jp/v1/json/operationLine?key="+ekey+"&prefectureCode="+prefectureCode;
@@ -78,6 +82,8 @@ public class EkiLineController {
             
         }
 
+        model.addAttribute("prefectureAreas", prefectureAreas);
+        model.addAttribute("prefectures", prefectures);
         model.addAttribute("stationList", stationList);
         model.addAttribute("prefectureCode", prefectureCode);
         model.addAttribute("operationLineCode", operationLineCode);
