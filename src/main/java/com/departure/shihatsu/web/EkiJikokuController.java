@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.departure.shihatsu.domain.JikokuMinute;
 import com.departure.shihatsu.domain.DateGroupEnum;
+import com.departure.shihatsu.domain.JikokuDir;
 import com.departure.shihatsu.domain.JikokuInfo;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,17 +51,25 @@ public class EkiJikokuController {
         
         // 駅情報一覧を取得して当該路線の最初のcodeを取得する
         List<String> tmpList = new ArrayList<>();
-        if (code == null){
-            String tmpEkiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode="+stationCode;
-            RestTemplate tmpRestTemplate = new RestTemplate();
-            String tmpResultStr = tmpRestTemplate.getForObject(tmpEkiUrl, String.class);
-            ObjectMapper tmpMapper = new ObjectMapper();
-            JsonNode tmpTimeTable = tmpMapper.readTree(tmpResultStr).get("ResultSet").get("TimeTable");
+        List<JikokuDir> jikokuDir = new ArrayList<JikokuDir>();
 
-            for (Object obj : tmpTimeTable) {
-                if (obj.toString().indexOf(lineName) == -1){continue;}
-                tmpList.add((String) obj.toString());
-            }
+        /* 該当路線の行先を取得する */
+        String tmpEkiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable?key="+ekey+"&stationCode="+stationCode;
+        RestTemplate tmpRestTemplate = new RestTemplate();
+        String tmpResultStr = tmpRestTemplate.getForObject(tmpEkiUrl, String.class);
+        ObjectMapper tmpMapper = new ObjectMapper();
+        JsonNode tmpTimeTable = tmpMapper.readTree(tmpResultStr).get("ResultSet").get("TimeTable");
+
+        for (JsonNode obj : tmpTimeTable) {
+            if (obj.toString().indexOf(lineName) == -1){continue;}
+            tmpList.add((String) obj.toString());
+            JikokuDir j = new JikokuDir();
+            j.setStationName(obj.get("Station").get("Name").asText());
+            j.setCode(obj.get("code").asText());
+            j.setLineDir(obj.get("Line").get("Direction").asText());
+            jikokuDir.add(j);
+        }
+        if (code == null){
             code = tmpTimeTable.get(tmpList.size()-1).get("code").asText();
         }
         String ekiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable"
@@ -125,6 +134,8 @@ public class EkiJikokuController {
         model.addAttribute("dateGroup",dateGroup);
         model.addAttribute("dateGroupEnums",dateGroupEnums);
         model.addAttribute("stationCode",stationCode);
+        model.addAttribute("jikokuDir",jikokuDir);
+        model.addAttribute("code",code);
         return "main/jikoku";
     }
 }

@@ -24,19 +24,25 @@
       </tr>
       <tr>
         <td scope="row">行先・方面</td>
-        <td scope="row" th:text="${info.getLineDir()}"/>
+        <td scope="row">
+          <span th:each="j, jStat : ${jikokuDir}">
+            <a th:href="@{/jikoku(stationCode=${stationCode},line=${info.getLineName()},code=${j.getCode()},dateGroup=${dateGroup})}">
+              <span th:text="${j.getLineDir()}" class="mr-2" th:classappend="${(j.getLineDir().equals(info.getLineDir()) ? 'font-weight-bold' : 'text-secondary')}"/>
+            </a>
+          </span>
+        </td>
       </tr>
       <tr>
-          <td scope="row">曜日区分</td>
-          <td scope="row">
-            <span th:each="d, dStat : ${dateGroupEnums}">
-              <a th:href="@{/jikoku(stationCode=${stationCode},line=${info.getLineName()},dateGroup=${d.getType()})}">
-                <span th:text="${d.getTypeName()}" class="mr-2" th:classappend="${(d.getType().equals(info.getDateGroup()) ? 'font-weight-bold' : 'text-secondary')}"/>
-              </a>
-            </span>
-          </td> 
-        </tr>
-      </table>
+        <td scope="row">曜日区分</td>
+        <td scope="row">
+          <span th:each="d, dStat : ${dateGroupEnums}">
+            <a th:href="@{/jikoku(stationCode=${stationCode},line=${info.getLineName()},code=${code},dateGroup=${d.getType()})}">
+              <span th:text="${d.getTypeName()}" class="mr-2" th:classappend="${(d.getType().equals(info.getDateGroup()) ? 'font-weight-bold' : 'text-secondary')}"/>
+            </a>
+          </span>
+        </td> 
+      </tr>
+    </table>
     <h3>スポンサーリンク</h3>
     <!-- departure -->
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
