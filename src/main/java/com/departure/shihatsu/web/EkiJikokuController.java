@@ -43,6 +43,10 @@ public class EkiJikokuController {
         String stationCode = queryParameters.get("stationCode");
         String code = queryParameters.get("code");
         String lineName = queryParameters.get("line");
+        if (lineName.contains("(")) {
+            String[] str = lineName.split("\\(");
+            lineName = str[0];
+        }
         String dateGroup = queryParameters.get("dateGroup");
         if (dateGroup == null){dateGroup = "weekday";}
         DateGroupEnum[] dateGroupEnums = DateGroupEnum.values();
