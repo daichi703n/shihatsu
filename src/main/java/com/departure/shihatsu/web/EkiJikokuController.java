@@ -43,6 +43,10 @@ public class EkiJikokuController {
         String stationCode = queryParameters.get("stationCode");
         String code = queryParameters.get("code");
         String lineName = queryParameters.get("line");
+        if (lineName.contains("(")) {
+            String[] str = lineName.split("\\(");
+            lineName = str[0];
+        }
         String dateGroup = queryParameters.get("dateGroup");
         if (dateGroup == null){dateGroup = "weekday";}
         DateGroupEnum[] dateGroupEnums = DateGroupEnum.values();
@@ -62,7 +66,6 @@ public class EkiJikokuController {
 
         for (JsonNode obj : tmpTimeTable) {
             if (obj.toString().indexOf(lineName) == -1){continue;}
-            tmpList.add((String) obj.toString());
             JikokuDir j = new JikokuDir();
             j.setStationName(obj.get("Station").get("Name").asText());
             j.setCode(obj.get("code").asText());
@@ -70,7 +73,7 @@ public class EkiJikokuController {
             jikokuDir.add(j);
         }
         if (code == null){
-            code = tmpTimeTable.get(tmpList.size()-1).get("code").asText();
+            code = jikokuDir.get(0).getCode();
         }
         String ekiUrl="https://api.ekispert.jp/v1/json/operationLine/timetable"
             +"?key="+ekey
